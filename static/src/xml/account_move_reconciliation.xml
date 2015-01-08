@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<templates id="template" xml:space="preserve">
+
+    <t t-extend="AccountReconciliation">
+
+        <t t-jquery=".oe_account_reconciliation div > div:first-child" t-operation="replace">
+            <div>
+                <button class="oe_account_recon_previous oe_button" href="javascript:void(0)">&lt;</button>
+                <button class="oe_account_recon_next oe_button" href="javascript:void(0)">&gt;</button>
+                <select class="oe_account_recon_select" style="width: 600px;">
+                    <t t-foreach="widget.partners.length" t-as="index">
+                        <t t-if="widget.current_partner != index">
+                            <option t-att-value="index">
+                                <t t-esc="widget.partners[index][1]"/>
+                            </option>
+                        </t>
+
+                        <t t-if="widget.current_partner === index">
+                            <option t-att-value="index" selected="selected">
+                                <t t-esc="widget.partners[index][1]"/>
+                            </option>
+                        </t>
+                    </t>
+                </select>
+                <t t-esc="'' + (widget.current_partner + 1) + '/' + widget.partners.length"/>
+            </div>
+        </t>
+    </t>
+
+</templates>
+

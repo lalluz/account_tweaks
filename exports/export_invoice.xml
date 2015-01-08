@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+
+    <data>
+
+        <record id="export_invoice" model="ir.exports">
+            <field name="resource">account.invoice</field>
+            <field name="name">Supplier Invoices</field>
+        </record>
+
+        <record id="export_invoice_date_due" model="ir.exports.line">
+            <field name="export_id" ref="export_invoice"/>
+            <field name="name">date_due</field>
+        </record>
+
+        <record id="export_invoice_partner_id" model="ir.exports.line">
+            <field name="export_id" ref="export_invoice"/>
+            <field name="name">partner_id/name</field>
+        </record>
+
+        <record id="export_invoice_number" model="ir.exports.line">
+            <field name="export_id" ref="export_invoice"/>
+            <field name="name">number</field>
+        </record>
+
+        <record id="export_invoice_date_invoice" model="ir.exports.line">
+            <field name="export_id" ref="export_invoice"/>
+            <field name="name">date_invoice</field>
+        </record>
+
+        <record id="export_invoice_supplier_invoice_number" model="ir.exports.line">
+            <field name="export_id" ref="export_invoice"/>
+            <field name="name">supplier_invoice_number</field>
+        </record>
+
+        <record id="export_invoice_date_invoice_supplier" model="ir.exports.line">
+            <field name="export_id" ref="export_invoice"/>
+            <field name="name">date_invoice_supplier</field>
+        </record>
+
+        <record id="export_invoice_payment_term" model="ir.exports.line">
+            <field name="export_id" ref="export_invoice"/>
+            <field name="name">payment_term/name</field>
+        </record>
+
+        <record id="export_invoice_amount_total" model="ir.exports.line">
+            <field name="export_id" ref="export_invoice"/>
+            <field name="name">amount_total</field>
+        </record>
+
+    </data>
+
+</openerp>
+

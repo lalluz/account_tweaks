@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+
+    <data noupdate="0">
+
+        <!-- Invoice -->
+        <report auto="False"
+                id="account.account_invoices"
+                model="account.invoice"
+                name="account_tweaks.invoice"
+                rml="account_tweaks/report/account_print_invoice.rml"
+                string="Invoices"
+                attachment="(object.state in ('open','paid')) and ('INV'+(object.number or '').replace('/','')+'.pdf')"
+                attachment_use="True"
+                usage="default"/>
+
+        <!-- Sale/Purchase Journal -->
+        <report auto="False"
+                id="account.account_journal_sale_purchase"
+                model="account.journal.period"
+                name="account_tweaks.journal.period.print.sale.purchase"
+                rml="account_tweaks/report/account_journal_sale_purchase.rml"
+                string="Sale/Purchase Journal"
+                header="False"/>
+
+    </data>
+
+</openerp>
+
+

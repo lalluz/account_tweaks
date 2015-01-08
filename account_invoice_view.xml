@@ -1,0 +1,328 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+
+    <data noupdate="0">
+
+        <!-- Customer Invoice -->
+        <record id="invoice_form" model="ir.ui.view">
+            <field name="name">account.invoice.form.inherited</field>
+            <field name="model">account.invoice</field>
+            <field name="inherit_id" ref="account.invoice_form"/>
+            <field name="arch" type="xml">
+                <xpath expr="//button[@name='action_invoice_sent'][@class='oe_highlight']" position="replace"></xpath>
+                <xpath expr="//button[@name='action_invoice_sent']" position="replace"></xpath>
+                <xpath expr="//button[@name='invoice_print']" position="replace"></xpath>
+
+                <xpath expr="//button[@string='Refund Invoice']" position="before">
+                    <button name="do_drop_document" type="object" string="Delete Existing Document"
+                            attrs="{'invisible': [('state', 'not in', ['open', 'paid', 'proforma2'])]}"
+                            groups="account.group_account_invoice"/>
+<!--
+                            attrs="{'invisible': ['|', ('state', 'not in', ['open', 'paid', 'proforma2']), ('sending_state', 'in', ['SENT', 'MANUALLY_SENT'])]}"
+-->
+                </xpath>
+
+                <xpath expr="//field[@name='tax_line']" position="replace"></xpath>
+                <xpath expr="//group[contains(@class, 'oe_subtotal_footer')]" position="after">
+                    <div style="width: 50%%">
+                    <field name="tax_line">
+                        <tree editable="bottom" string="Taxes">
+                            <field name="name"/>
+                            <field name="account_id" groups="account.group_account_user"/>
+                            <field name="base" on_change="base_change(base,parent.currency_id,parent.company_id,parent.date_invoice)" readonly="1"/>
+                            <field name="amount" on_change="amount_change(amount,parent.currency_id,parent.company_id,parent.date_invoice)"/>
+                            <field invisible="True" name="base_amount"/>
+                            <field invisible="True" name="tax_amount"/>
+                            <field name="factor_base" invisible="True"/>
+                            <field name="factor_tax" invisible="True"/>
+                        </tree>
+                    </field>
+                    </div>
+                </xpath>
+
+                <xpath expr="//sheet[@string='Invoice']//group/field[@name='partner_id']" position="after">
+                    <field name="heading_partner_id"/>
+                    <field name="project_id"/>
+                </xpath>
+
+                <xpath expr="//sheet[@string='Invoice']//group/field[@name='fiscal_position']" position="after">
+                    <field name="with_fiscal_stamp"/>
+                </xpath>
+
+                <xpath expr="//sheet[@string='Invoice']//group/field[@name='date_invoice']" position="replace">
+                    <field name="date_invoice" required="1"/>
+                </xpath>
+
+                <xpath expr="//sheet[@string='Invoice']//group/field[@name='payment_term']" position="replace"></xpath>
+                <xpath expr="//sheet[@string='Invoice']//group/field[@name='date_due']" position="replace"></xpath>
+                <xpath expr="//sheet[@string='Invoice']//group/field[@name='partner_bank_id']" position="replace"></xpath>
+
+                <xpath expr="//sheet[@string='Invoice']/notebook/page[@string='Payments']/field[@name='payment_ids']" position="before">
+                    <group>
+                        <group>
+                            <field name="payment_term"/>
+                            <field name="date_due" attrs="{'invisible': [('payment_term', '!=', False)]}"/>
+                        </group>
+                        <group>
+                            <field name="partner_bank_id"/>
+                        </group>
+                    </group>
+                </xpath>
+
+                <xpath expr="//sheet[@string='Invoice']/notebook/page[@string='Payments']" position="after">
+                    <page string="Journal Items" attrs="{'invisible': [('move_id', '=', False)]}">
+                        <field name="move_line_ids" readonly="1">
+                            <tree string="Journal Items">
+                                <field name="name"/>
+                                <field name="account_id"/>
+                                <field name="date_maturity"/>
+                                <field name="debit" sum="Total debit"/>
+                                <field name="credit" sum="Total credit"/>
+                                <field name="analytic_account_id"/>
+                                <field name="tax_code_id"/>
+                                <field name="state"/>
+                                <field name="reconcile_id"/>
+                            </tree>
+                        </field>
+                    </page>
+
+                    <page string="Sending">
+                        <group string="Sending Data">
+                            <field name="sending_partner_id" on_change="onchange_sending_partner_id(partner_id, sending_partner_id)"/>
+                            <field name="recipients"/>
+                            <field name="manual_sending" attrs="{'invisible': [('sending_state', 'in', ['SENT', 'OUTGOING'])],
+                                                                 'readonly': [('sending_state', 'in', ['', 'MANUALLY_SENT'])]}"/>
+                            <field name="sent_manually" attrs="{'invisible': [('manual_sending', '=', False)],
+                                                                'readonly': [('sending_state', 'in', ['SENT', 'MANUALLY_SENT'])]}"/>
+                            <field name="sending_state"/>
+                        </group>
+
+                        <div class="oe_horizontal_separator">
+                            Automatic Emails
+                        </div>
+
+                        <field name="sent_emails" readonly="1"> <!-- attrs="{'readonly': [('sending_state', '=', 'Sent')]}" -->
+                            <tree colors="grey:state in ('sent', 'cancel');blue:state=='outgoing';red:state=='exception';black:state=='received'">
+                                <field name="date"/>
+                                <field name="subject"/>
+                                <field name="recipient_ids"/>
+                                <field name="email_from"/>
+                                <field name="state"/>
+                                <button name="send" string="Send Now" type="object" icon="gtk-media-play" states='outgoing'/>
+                                <button name="mark_outgoing" string="Retry" type="object" icon="gtk-redo" states='exception,cancel'/>
+                                <button name="cancel" string="Cancel Email" type="object" icon="terp-gtk-stop" states='outgoing'/>
+                            </tree>
+                        </field>
+                    </page>
+                </xpath>
+            </field>
+        </record>
+
+        <record id="invoice_tree" model="ir.ui.view">
+            <field name="name">account.invoice.tree.inherited</field>
+            <field name="model">account.invoice</field>
+            <field name="inherit_id" ref="account.invoice_tree"/>
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='number']" position="after">
+                    <field name="project_id"/>
+                </xpath>
+
+                <xpath expr="//field[@name='user_id']" position="replace">
+                </xpath>
+
+                <xpath expr="//field[@name='state']" position="before">
+                    <field name="sending_state"/>
+                </xpath>
+            </field>
+        </record>
+
+        <record id="view_account_invoice_filter" model="ir.ui.view">
+            <field name="name">account.invoice.select.inherited</field>
+            <field name="model">account.invoice</field>
+            <field name="inherit_id" ref="account.view_account_invoice_filter"/>
+            <field name="arch" type="xml">
+                <xpath expr="/search[@string='Search Invoice']/group[@string='Group By...']" position="before">
+                    <separator/>
+                    <filter string="Sent" icon="terp-personal" domain="[('sending_state', 'in', ('SENT', 'SENT_MANUALLY'))]"/>
+                    <filter string="Not Sent" icon="terp-personal" domain="[('sending_state', '=', 'NOT_SENT')]"/>
+                    <filter string="Missing Recipients" icon="terp-personal" domain="[('sending_state', '=', 'MISSING_RECIPIENTS')]"/>
+                    <filter string="Manual" icon="terp-personal" domain="[('sending_state', '=', 'TO_SEND_MANUALLY')]"/>
+                    <separator/>
+                </xpath>
+                <xpath expr="/search[@string='Search Invoice']//filter[@string='Responsible']" position="after">
+                    <filter string="Project" icon="terp-personal" context="{'group_by': 'project_id'}"/>
+                </xpath>
+                <xpath expr="/search[@string='Search Invoice']//filter[@string='Period']" position="after">
+                    <filter string="Day" icon="terp-personal" context="{'group_by': 'day_invoice'}"/>
+                </xpath>
+            </field>
+        </record>
+
+        <!-- Supplier Invoice -->
+        <record id="invoice_supplier_form" model="ir.ui.view">
+            <field name="name">account.invoice.supplier.form.inherited</field>
+            <field name="model">account.invoice</field>
+            <field name="inherit_id" ref="account.invoice_supplier_form"/>
+            <field name="arch" type="xml">
+                <xpath expr="//sheet[@string='Supplier Invoice']//group/field[@name='date_invoice']" position="replace">
+                    <field name="date_invoice" required="1" string="Registration Date"/>
+                </xpath>
+
+                <xpath expr="//sheet[@string='Supplier Invoice']//group/field[@name='supplier_invoice_number']" position="after">
+                    <field name="date_invoice_supplier"/>
+                </xpath>
+
+                <xpath expr="//sheet[@string='Supplier Invoice']/notebook/page[@string='Payments']" position="after">
+                    <page string="Journal Items" attrs="{'invisible': [('move_id', '=', False)]}">
+                        <field name="move_line_ids" readonly="1">
+                            <tree string="Journal Items">
+                                <field name="name"/>
+                                <field name="account_id"/>
+                                <field name="date_maturity"/>
+                                <field name="debit" sum="Total debit"/>
+                                <field name="credit" sum="Total credit"/>
+                                <field name="analytic_account_id"/>
+                                <field name="tax_code_id"/>
+                                <field name="state"/>
+                            </tree>
+                        </field>
+                    </page>
+                </xpath>
+            </field>
+        </record>
+
+        <record id="invoice_supplier_tree" model="ir.ui.view">
+            <field name="name">account.invoice.supplier.tree.inherited</field>
+            <field name="model">account.invoice</field>
+            <field name="sequence" eval="20"/>
+            <field name="arch" type="xml">
+                <tree colors="blue:state == 'draft';black:state in ('proforma','proforma2','open');gray:state == 'cancel'" string="Invoice">
+                    <field name="date_due"/>
+                    <field name="partner_id" groups="base.group_user"/>
+                    <field name="projects"/>
+                    <field name="number"/>
+                    <field name="date_invoice" string="Registration Date"/>
+                    <field name="supplier_invoice_number"/>
+                    <field name="date_invoice_supplier"/>
+                    <field name="payment_term"/>
+                    <field name="company_id" groups="base.group_multi_company" widget="selection"/>
+                    <field name="origin" invisible="1"/>
+                    <field name="currency_id" groups="base.group_multi_currency"/>
+                    <field name="residual" sum="Residual Amount"/>
+                    <field name="amount_total" sum="Total Amount"/>
+                    <field name="state"/>
+                </tree>
+            </field>
+        </record>
+
+        <record id="action_invoice_supplier_tree_view1" model="ir.actions.act_window.view">
+            <field eval="1" name="sequence"/>
+            <field name="view_mode">tree</field>
+            <field name="view_id" ref="invoice_supplier_tree"/>
+            <field name="act_window_id" ref="account.action_invoice_tree2"/>
+        </record>
+
+        <record id="action_invoice_supplier_refunds_tree_view1" model="ir.actions.act_window.view">
+            <field eval="1" name="sequence"/>
+            <field name="view_mode">tree</field>
+            <field name="view_id" ref="invoice_supplier_tree"/>
+            <field name="act_window_id" ref="account.action_invoice_tree4"/>
+        </record>
+
+        <!-- Server Actions -->
+        <record id="action_delete_validated_invoice" model="ir.actions.server">
+            <field name="name">Delete Validated Invoice</field>
+            <field name="model_id" ref="model_account_invoice"/>
+            <field name="state">code</field>
+            <field name="code">action = object.unlink_validated ()</field>
+            <field name="condition">True</field>
+        </record>
+
+        <record id="value_delete_validated_invoice" model="ir.values">
+            <field name="key2">client_action_relate</field> <!-- NOT SURE: maybe 'client_action_multi' -->
+            <field name="model">account.invoice</field>
+            <field name="name">Run Delete Validated Invoice</field>
+            <field eval="'ir.actions.server,%d' % action_delete_validated_invoice" name="value"/>
+        </record>
+
+        <!-- Sequences -->
+        <record id="sequence_tree" model="ir.ui.view">
+            <field name="name">account_tweaks.ir.sequence.tree</field>
+            <field name="model">ir.sequence</field>
+            <field name="arch" type="xml">
+                <tree string="Sequences">
+                    <field name="name"/>
+                        <field name="prefix"/>
+                    <field name="number_next"/>
+                </tree>
+            </field>
+        </record>
+
+        <record id="sequence_form" model="ir.ui.view">
+            <field name="name">account_tweaks.ir.sequence.form</field>
+            <field name="model">ir.sequence</field>
+            <field name="arch" type="xml">
+                <form string="Sequence" version="7.0">
+                    <sheet string="Sequence">
+                    <group>
+                        <field name="name" readonly="1"/>
+                        <field name="prefix" readonly="1"/>
+                        <field name="number_next"/>
+                    </group>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
+        <record id="action_sale_sequences" model="ir.actions.act_window">
+            <field name="name">Sequence Numbers</field>
+            <field name="res_model">ir.sequence</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form</field>
+            <field name="domain">[('name', 'in', ['Sales Journal', 'Sales 74/ter Journal'])]</field>
+        </record>
+
+        <record id="action_sale_sequences_tree" model="ir.actions.act_window.view">
+            <field eval="1" name="sequence"/>
+            <field name="view_mode">tree</field>
+            <field name="view_id" ref="sequence_tree"/>
+            <field name="act_window_id" ref="action_sale_sequences"/>
+        </record>
+
+        <record id="action_sale_sequences_form" model="ir.actions.act_window.view">
+            <field eval="2" name="sequence"/>
+            <field name="view_mode">form</field>
+            <field name="view_id" ref="sequence_form"/>
+            <field name="act_window_id" ref="action_sale_sequences"/>
+        </record>
+
+        <menuitem action="action_sale_sequences" id="menu_sale_sequences" parent="account.menu_finance_receivables" sequence="100"/>
+
+        <record id="action_purchase_sequences" model="ir.actions.act_window">
+            <field name="name">Sequence Numbers</field>
+            <field name="res_model">ir.sequence</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form,</field>
+            <field name="domain">[('name', 'in', ['Purchase Journal', 'Purchase 74/ter Journal'])]</field>
+        </record>
+
+        <record id="action_purchase_sequences_tree" model="ir.actions.act_window.view">
+            <field eval="1" name="sequence"/>
+            <field name="view_mode">tree</field>
+            <field name="view_id" ref="sequence_tree"/>
+            <field name="act_window_id" ref="action_purchase_sequences"/>
+        </record>
+
+        <record id="action_purchase_sequences_form" model="ir.actions.act_window.view">
+            <field eval="2" name="sequence"/>
+            <field name="view_mode">form</field>
+            <field name="view_id" ref="sequence_form"/>
+            <field name="act_window_id" ref="action_purchase_sequences"/>
+        </record>
+
+        <menuitem action="action_purchase_sequences" id="menu_purchase_sequences" parent="account.menu_finance_payables" sequence="100"/>
+
+    </data>
+
+</openerp>
+

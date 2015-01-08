@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+    <data>
+
+        <record id="account_report_print_journal" model="ir.ui.view">
+            <field name="name">Account Print Journal</field>
+            <field name="model">account.print.journal</field>
+            <field name="inherit_id" ref="account.account_report_print_journal" />
+            <field name="arch" type="xml">
+                <data>
+                    <xpath expr="//field[@name='journal_ids']" position="before">
+                        <field name="merge_journals"/>
+                    </xpath>
+                </data>
+            </field>
+        </record>
+
+        <delete id="account.menu_account_print_sale_purchase_journal" model="ir.ui.menu"/>
+
+        <record id="action_account_print_sale_journal" model="ir.actions.act_window">
+            <field name="name">Print Sale Journal</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">account.print.journal</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">form</field>
+            <field name="target">new</field>
+            <field name="context">{'sale_only': True, 'sale_purchase_only': True}</field>
+            <field name="view_id" ref="account.account_report_print_journal"/>
+        </record>
+
+        <menuitem name="Sale Journals"
+                  parent="account.menu_journals_report"
+                  action="action_account_print_sale_journal"
+                  id="menu_account_print_sale_journal"
+                  icon="STOCK_PRINT"
+                  sequence="2"/>
+
+        <record id="action_account_print_purchase_journal" model="ir.actions.act_window">
+            <field name="name">Print Purchase Journal</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">account.print.journal</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">form</field>
+            <field name="target">new</field>
+            <field name="context">{'purchase_only': True, 'sale_purchase_only': True}</field>
+            <field name="view_id" ref="account.account_report_print_journal"/>
+        </record>
+
+        <menuitem name="Purchase Journals"
+                  parent="account.menu_journals_report"
+                  action="action_account_print_purchase_journal"
+                  id="menu_account_print_purchase_journal"
+                  icon="STOCK_PRINT"
+                  sequence="3"/>
+
+    </data>
+</openerp>
