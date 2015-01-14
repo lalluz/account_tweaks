@@ -279,7 +279,7 @@
             <field name="res_model">ir.sequence</field>
             <field name="view_type">form</field>
             <field name="view_mode">tree,form</field>
-            <field name="domain">[('name', 'in', ['Sales Journal', 'Sales 74/ter Journal'])]</field>
+            <field name="domain">[('code', '=', 'account_tweaks.sales.invoice'), ('is_child', '=', True)]</field>
         </record>
 
         <record id="action_sale_sequences_tree" model="ir.actions.act_window.view">
@@ -303,7 +303,7 @@
             <field name="res_model">ir.sequence</field>
             <field name="view_type">form</field>
             <field name="view_mode">tree,form,</field>
-            <field name="domain">[('name', 'in', ['Purchase Journal', 'Purchase 74/ter Journal'])]</field>
+            <field name="domain">[('code', '=', 'account_tweaks.purchase.invoice')]</field>
         </record>
 
         <record id="action_purchase_sequences_tree" model="ir.actions.act_window.view">

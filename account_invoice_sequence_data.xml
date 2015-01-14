@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+    <data>
+        <record id="sequence_sales_invoice" model="ir.sequence.type">
+            <field name="name">Sales Invoice</field>
+            <field name="code">account_tweaks.sales.invoice</field>
+        </record>
+
+        <record id="sequence_purchase_invoice" model="ir.sequence.type">
+            <field name="name">Purchase Invoice</field>
+            <field name="code">account_tweaks.purchase.invoice</field>
+        </record>
+    </data>
+</openerp>

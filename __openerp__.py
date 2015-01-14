@@ -17,6 +17,8 @@
         'account_invoice_view.xml',
         'product_view.xml',
         'account_report.xml',
+        'ir_sequence_view.xml',
+        'account_invoice_sequence_data.xml',
         'wizard/account_report_print_journal_view.xml',
         'exports/export_invoice.xml',
         'security/ir.model.access.csv',

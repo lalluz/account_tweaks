@@ -76,6 +76,16 @@ class account_fiscalyear (osv.Model):
         'prorata': 17,  # FIXME: placeholder
     }
 
+    def create(self, cr, uid, vals, context=None):
+        ret = super(account_fiscalyear, self).create(cr, uid, vals, context)
+
+        sequence_obj = self.pool.get('ir.sequence')
+
+        ids = sequence_obj.search( cr, uid, [('auto_fiscalyears', '=', True)])
+        sequence_obj.update_fiscalyears(cr, uid, ids, context)
+
+        return ret
+
 
 class account_period (osv.Model):
 

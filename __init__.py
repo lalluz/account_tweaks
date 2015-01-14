@@ -5,6 +5,7 @@ from . import product
 from . import res_config
 from . import res_partner
 from . import ir_attachment
+from . import ir_sequence
 from . import report
 from . import controllers
 from . import wizard
