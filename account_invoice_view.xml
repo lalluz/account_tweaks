@@ -303,7 +303,7 @@
             <field name="res_model">ir.sequence</field>
             <field name="view_type">form</field>
             <field name="view_mode">tree,form,</field>
-            <field name="domain">[('code', '=', 'account_tweaks.purchase.invoice')]</field>
+            <field name="domain">[('code', '=', 'account_tweaks.purchase.invoice'), ('is_child', '=', True)]</field>
         </record>
 
         <record id="action_purchase_sequences_tree" model="ir.actions.act_window.view">
