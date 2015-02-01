@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<templates id="template" xml:space="preserve">
+
+    <t t-name="account_tweaks.company_vs_private_customer_invoices_template">
+        <div class="oe_view_manager oe_view_manager_current">
+            <table class="oe_view_manager_header">
+                <tbody>
+                    <tr class="oe_header_row oe_header_row_top">
+                        <td colspan="2">
+                            <h2 class="oe_view_title">
+                                <span class="oe_view_title_text oe_breadcrumb_title"><span class="oe_breadcrumb_item">Customer Invoices</span></span>
+                            </h2>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <div class="oe_form_container">
+                <div class="oe_form">
+                    <div class="oe_form_sheetbg">
+                        <div class="oe_form_sheet oe_form_sheet_width">
+                            <h1>
+                                Company vs. Private Customer Invoices
+                            </h1>
+
+                            <div style="padding-top: 20px;">
+                                <input type="date" id="date_from"/>
+                                <input type="date" id="date_to"/>
+                                <button id="search-button">Search</button>
+
+                                <div style="padding-top: 20px;" id="oe_account_tweaks_results">
+                                </div> <!-- #oe_account_tweaks_results -->
+                            </div>
+
+                        </div> <!-- .oe_form_sheet oe_form_sheet_width -->
+                    </div> <!-- .oe_form_sheetbg -->
+                </div> <!-- .oe_form -->
+            </div> <!-- .oe_form_container -->
+
+        </div> <!-- .oe_view_manager .oe_view_manager_current -->
+    </t>
+
+</templates>

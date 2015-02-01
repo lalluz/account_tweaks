@@ -107,6 +107,18 @@
             </field>
         </record>
 
+        <!-- Company vs. Private Customer Invoices -->
+        <record model="ir.actions.client" id="action_company_vs_private_customer_invoices">
+            <field name="tag">account_tweaks.action_company_vs_private_customer_invoices</field>
+        </record>
+
+        <menuitem
+             name="Company vs. Private Customer Invoices"
+             action="action_company_vs_private_customer_invoices"
+             id="menu_company_vs_private_customer_invoices"
+             sequence="100"
+             parent="account.menu_finance_legal_statement"/>
+
         <!-- Server Actions -->
         <record id="action_unpost_move" model="ir.actions.server">
             <field name="name">Unpost</field>

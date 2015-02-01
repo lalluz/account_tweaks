@@ -11,7 +11,10 @@
         'project',
     ],
     'js': ['static/src/js/account_tweaks.js'],
-    'qweb': ['static/src/xml/account_move_reconciliation.xml'],
+    'qweb': [
+        'static/src/xml/account_tweaks.xml',
+        'static/src/xml/account_move_reconciliation.xml',
+    ],
     'data': [
         'account_view.xml',
         'account_invoice_view.xml',
