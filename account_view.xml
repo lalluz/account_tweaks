@@ -15,6 +15,18 @@
             </field>
         </record>
 
+        <!-- Account Tax Code -->
+        <record id="view_tax_code_form" model="ir.ui.view">
+            <field name="name">account.tax.code.form.inherited</field>
+            <field name="model">account.tax.code</field>
+            <field name="inherit_id" ref="account.view_tax_code_form"/>
+            <field name="arch" type="xml">
+                <xpath expr="//group/field[@name='sign']" position="after">
+                    <field name="exclude_from_company_vs_private" string="Exclude from Company vs. Private Report"/>
+                </xpath>
+            </field>
+        </record>
+
         <!-- Fiscal Year -->
         <record id="view_account_fiscalyear_form" model="ir.ui.view">
             <field name="name">account.fiscalyear.form.inherited</field>

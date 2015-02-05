@@ -73,6 +73,20 @@ class account_voucher (osv.Model):
         return self.pool.get ('ir.actions.act_window').read (cr, uid, act_id)
 
 
+class account_tax_code (osv.Model):
+
+    _inherit = 'account.tax.code'
+
+    _columns = {
+        'exclude_from_company_vs_private': fields.boolean(
+            'exclude_from_company_vs_private')
+    }
+
+    _defaults = {
+        'exclude_from_company_vs_private': False,
+    }
+
+
 class account_fiscalyear (osv.Model):
 
     _inherit = 'account.fiscalyear'

@@ -127,6 +127,9 @@ class CompanyVsPrivateCustomerInvoicesActionController (http.Controller):
 
         tax_map = OrderedDict ()
         for tax in sorted (invoice_taxes, key=lambda t: t.invoice_id.number):
+            if tax.tax_code_id.exclude_from_company_vs_private:
+                continue
+
             tax.rate = int (round (tax.tax_amount * 100 / tax.base_amount))
 
             tax_map.setdefault (tax.invoice_id, []).append (tax)
