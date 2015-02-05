@@ -10,6 +10,15 @@ from openerp.tools.translate import _
 from collections import OrderedDict
 
 
+class account_account (osv.Model):
+
+    _inherit = 'account.account'
+
+    _columns = {
+        'account_type_name': fields.related('user_type', 'name', type='char', string='Account Type'),
+    }
+
+
 class account_move (osv.Model):
 
     _name = 'account.move'
