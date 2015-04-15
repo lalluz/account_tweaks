@@ -210,6 +210,9 @@
       <para style="terp_default_9">
         [[ (o.with_fiscal_stamp and format(u'Bollo €2,00 assolto su originale') or removeParentNode('para')) ]]
       </para>
+      <para style="terp_default_9">
+        [[ (o.with_split_payment and format(u'Scissione dei Pagamenti') or removeParentNode('para')) ]]
+      </para>
       &#0160;
     </section>
 

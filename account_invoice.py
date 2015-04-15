@@ -228,6 +228,7 @@ class account_invoice (osv.Model):
                                      fnct_search=_search_projects, readonly=True),
         'date_invoice_supplier': fields.date ('Supplier Invoice Date', select=True),
         'with_fiscal_stamp': fields.boolean ('Bollo'),
+        'with_split_payment': fields.boolean ('Scissione dei Pagamenti'),
 
         'manual_sending': fields.boolean ("Manual Sending"),
         'sent_manually': fields.boolean ("Sent Manually"),

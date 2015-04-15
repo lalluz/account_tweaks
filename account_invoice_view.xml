@@ -47,6 +47,7 @@
 
                 <xpath expr="//sheet[@string='Invoice']//group/field[@name='fiscal_position']" position="after">
                     <field name="with_fiscal_stamp"/>
+                    <field name="with_split_payment"/>
                 </xpath>
 
                 <xpath expr="//sheet[@string='Invoice']//group/field[@name='date_invoice']" position="replace">
