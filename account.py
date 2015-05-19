@@ -87,6 +87,19 @@ class account_tax_code (osv.Model):
     }
 
 
+class account_tax (osv.Model):
+
+    _inherit = 'account.tax'
+
+    _columns = {
+        'with_split_payment': fields.boolean('with_split_payment'),
+    }
+
+    _defaults = {
+        'with_split_payment': False,
+    }
+
+
 class account_fiscalyear (osv.Model):
 
     _inherit = 'account.fiscalyear'

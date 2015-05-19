@@ -5,6 +5,8 @@ from openerp import SUPERUSER_ID
 from openerp.osv import osv
 from openerp.osv import fields
 
+from openerp.addons import decimal_precision as dp
+
 from openerp.tools.translate import _
 
 
@@ -207,6 +209,32 @@ class account_invoice (osv.Model):
 
         return res
 
+    def _amount_total_due(self, cr, uid, ids, name, args, context=None):
+        res = {}
+
+        for invoice in self.browse(cr, uid, ids, context=context):
+            res[invoice.id] = {
+                'amount_total_due': 0.0,
+            }
+
+            split_payment = 0.0
+            amount_untaxed = amount_tax = 0.0
+            skip_tax_codes = []
+
+            for line in invoice.invoice_line:
+                amount_untaxed += line.price_subtotal
+                skip_tax_codes += [t.tax_code_id for t in line.invoice_line_tax_id if t.with_split_payment]
+            for line in invoice.tax_line:
+                if line.tax_code_id in skip_tax_codes:
+                    continue
+
+                amount_tax += line.amount
+
+            res[invoice.id]['with_split_payment'] = True if len(skip_tax_codes) else False
+            res[invoice.id]['amount_total_due'] = amount_tax + amount_untaxed
+
+        return res
+
     SENDING_STATES = [
         ('NOT_SENT', _('Not Sent').replace (' ', u'\u00a0')),
         ('SENT', _('Sent').replace (' ', u'\u00a0')),
@@ -228,7 +256,6 @@ class account_invoice (osv.Model):
                                      fnct_search=_search_projects, readonly=True),
         'date_invoice_supplier': fields.date ('Supplier Invoice Date', select=True),
         'with_fiscal_stamp': fields.boolean ('Bollo'),
-        'with_split_payment': fields.boolean ('Scissione dei Pagamenti'),
 
         'manual_sending': fields.boolean ("Manual Sending"),
         'sent_manually': fields.boolean ("Sent Manually"),
@@ -247,6 +274,13 @@ class account_invoice (osv.Model):
             multi='sending_results', type="text", readonly=True),
 
         'day_invoice': fields.function (_get_day, string='Day', type="char", store=True),
+
+        'amount_total_due': fields.function(
+            _amount_total_due, digits_compute=dp.get_precision('Account'),
+            string='Total due', multi='total_due'),
+        'with_split_payment': fields.function(
+            _amount_total_due, type="boolean",
+            string='Scissione dei Pagamenti', multi='total_due'),
     }
 
     _sql_constraints = [

@@ -318,10 +318,24 @@
            </para>
          </td>
          <td>
-           <para style="terp_default_Right_9"><b>Total due:</b></para>
+           <para style="terp_default_Right_9"><b>Total:</b></para>
          </td>
          <td>
            <para style="terp_default_Bold_Right_9"><b>[[ formatLang(o.amount_total, digits=get_digits(dp='Account'), currency_obj=o.currency_id) ]]</b></para>
+         </td>
+       </tr>
+
+       <tr>
+         <td>
+           <para style="terp_default_8">
+             <font color="white">[[ (o.with_split_payment and format('') or removeParentNode('tr')) ]]</font>
+           </para>
+         </td>
+         <td>
+           <para style="terp_default_Right_9"><b>Total due:</b></para>
+         </td>
+         <td>
+           <para style="terp_default_Bold_Right_9"><b>[[ formatLang(o.amount_total_due, digits=get_digits(dp='Account'), currency_obj=o.currency_id) ]]</b></para>
          </td>
        </tr>
      </blockTable>
