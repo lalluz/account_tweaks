@@ -328,7 +328,7 @@
        <tr>
          <td>
            <para style="terp_default_8">
-             <font color="white">[[ (o.with_split_payment and format('') or removeParentNode('tr')) ]]</font>
+             <font color="white">[[ (o.with_split_payment and format('-') or removeParentNode('tr')) ]]</font>
            </para>
          </td>
          <td>
