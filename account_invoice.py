@@ -218,7 +218,9 @@ class account_invoice (osv.Model):
             }
 
             split_payment = 0.0
-            amount_untaxed = amount_tax = 0.0
+            amount_untaxed = 0.0
+            amount_tax = 0.0
+            amount_split_payment = 0.0
             skip_tax_codes = []
 
             for line in invoice.invoice_line:
@@ -226,11 +228,12 @@ class account_invoice (osv.Model):
                 skip_tax_codes += [t.tax_code_id for t in line.invoice_line_tax_id if t.with_split_payment]
             for line in invoice.tax_line:
                 if line.tax_code_id in skip_tax_codes:
-                    continue
+                    amount_split_payment += line.amount
+                else:
+                    amount_tax += line.amount
 
-                amount_tax += line.amount
-
-            res[invoice.id]['with_split_payment'] = True if len(skip_tax_codes) else False
+            res[invoice.id]['with_split_payment'] = True if amount_split_payment else False
+            res[invoice.id]['amount_split_payment'] = amount_split_payment
             res[invoice.id]['amount_total_due'] = amount_tax + amount_untaxed
 
         return res
@@ -278,6 +281,9 @@ class account_invoice (osv.Model):
         'amount_total_due': fields.function(
             _amount_total_due, digits_compute=dp.get_precision('Account'),
             string='Total due', multi='total_due'),
+        'amount_split_payment': fields.function(
+            _amount_total_due, digits_compute=dp.get_precision('Account'),
+            string='Split payment amount', multi='total_due'),
         'with_split_payment': fields.function(
             _amount_total_due, type="boolean",
             string='Scissione dei Pagamenti', multi='total_due'),
@@ -295,6 +301,82 @@ class account_invoice (osv.Model):
         })
 
         return super (account_invoice, self).copy(cr, uid, id, default, context)
+
+    def action_move_create(self, cr, uid, ids, context=None):
+        res = super (account_invoice, self).action_move_create(cr, uid, ids, context=context)
+
+        invoice_obj = self.pool.get ('account.invoice')
+        move_obj = self.pool.get('account.move')
+        move_line_obj = self.pool.get ('account.move.line')
+        reconcile_obj = self.pool.get('account.move.reconcile')
+        journal_obj = self.pool.get ('account.journal')
+        sequence_obj = self.pool.get('ir.sequence')
+
+        journal_id = journal_obj.search (cr, uid, [('code', '=', 'MISC')])[0]
+        journal = journal_obj.browse (cr, uid, journal_id)
+
+        for invoice in invoice_obj.browse (cr, uid, ids):
+            if not invoice.with_split_payment:
+                continue
+
+            reconcile_id = reconcile_obj.create (cr, uid, {
+                'type': 'auto',
+            })
+
+            amount = invoice.amount_split_payment
+            customer_account = invoice.partner_id.property_account_receivable
+
+            split_payment_tax_account = None
+            for line in invoice.invoice_line:
+                for tax in line.invoice_line_tax_id:
+                    if tax.with_split_payment:
+                        split_payment_tax_account = tax.account_collected_id
+                        break
+
+                if split_payment_tax_account:
+                    break
+
+            for move_line in invoice.move_id.line_id:
+                if move_line.credit:
+                    continue
+
+                if move_line.debit and move_line.account_id == customer_account:
+                    move_line.write({
+                        'reconcile_partial_id': reconcile_id,
+                    })
+                    break
+
+            move_id = move_obj.create (cr, uid, {
+                'name': sequence_obj.next_by_id(cr, uid, journal.sequence_id.id),
+                'ref': '%s - %s' % (invoice.move_id.name, 'SPLIT PAYMENT'),
+                'state': 'posted',
+                'date': invoice.move_id.date,
+                'company_id': invoice.move_id.company_id.id,
+                'journal_id': journal_id,
+                'partner_id': invoice.move_id.partner_id.id,
+                'period_id': invoice.move_id.period_id.id,
+            })
+
+            move_line_obj.create (cr, uid, {
+                'move_id': move_id,
+                'account_id': split_payment_tax_account.id,
+                'partner_id':  invoice.move_id.partner_id.id,
+                'name': '%s - %s' % (invoice.move_id.name, 'SPLIT PAYMENT'),
+                'debit': amount,
+                'quantity': 1,
+            })
+
+            line_id = move_line_obj.create (cr, uid, {
+                'move_id': move_id,
+                'account_id': customer_account.id,
+                'partner_id':  invoice.move_id.partner_id.id,
+                'name': '%s - %s' % (invoice.move_id.name, 'SPLIT PAYMENT'),
+                'credit': amount,
+                'quantity': 1,
+                'reconcile_partial_id': reconcile_id,
+            })
+
+        return res
 
     def unlink_validated (self, cr, uid, ids, context={}):
         # FIXME: should delete also payments which have been inserted as
