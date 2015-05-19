@@ -263,6 +263,10 @@ class account_invoice (osv.Model):
         return super (account_invoice, self).copy(cr, uid, id, default, context)
 
     def unlink_validated (self, cr, uid, ids, context={}):
+        # FIXME: should delete also payments which have been inserted as
+        # journal entries (not as "Customer payments" ==> vouchers) and are
+        # reconciled
+
         invoice = self.browse (cr, uid, ids[0], context=context)
 
         if not invoice.move_id:
