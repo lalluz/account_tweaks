@@ -329,6 +329,17 @@ class account_invoice (report_sxw.rml_parse):
             'formatBreakline': self.formatBreakline,
         })
 
+    def set_context (self, objects, data, ids, report_type=None):
+        ret = super (account_invoice, self).set_context (objects, data, ids, report_type=report_type)
+
+        invoice = self.localcontext['objects'][0]
+        self.localcontext['company'].current_journal_code = invoice.journal_id.code
+
+        self.localcontext['company'].rml_footer = invoice.journal_id.invoice_footer \
+            or self.localcontext['company'].rml_footer
+
+        return ret
+
     def formatBreakline (self, text):
         lines = self.format (text).split ('\n')
         for i, line in enumerate (lines[:]):

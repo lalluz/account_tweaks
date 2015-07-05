@@ -19,6 +19,15 @@ class account_account (osv.Model):
     }
 
 
+class account_journal (osv.Model):
+
+    _inherit = 'account.journal'
+
+    _columns = {
+        'invoice_footer': fields.text ('invoice_footer', help="Invoice Footer")
+    }
+
+
 class account_move (osv.Model):
 
     _name = 'account.move'
