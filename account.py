@@ -24,7 +24,8 @@ class account_journal (osv.Model):
     _inherit = 'account.journal'
 
     _columns = {
-        'invoice_footer': fields.text ('invoice_footer', help="Invoice Footer")
+        'invoice_footer': fields.text ('invoice_footer', help="Invoice Footer"),
+        'invoice_vat': fields.char ('Invoice VAT'),
     }
 
 

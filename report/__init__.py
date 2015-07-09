@@ -338,6 +338,9 @@ class account_invoice (report_sxw.rml_parse):
         self.localcontext['company'].rml_footer = invoice.journal_id.invoice_footer \
             or self.localcontext['company'].rml_footer
 
+        self.localcontext['company'].partner_id.vat = invoice.journal_id.invoice_vat \
+            or self.localcontext['company'].partner_id.vat
+
         return ret
 
     def formatBreakline (self, text):
