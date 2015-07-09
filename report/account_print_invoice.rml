@@ -182,8 +182,9 @@
     </para>
 
     <para style="terp_default_9">
-      [[ (o.project_id and format(o.project_id.analytic_account_id.name)) or removeParentNode('para') ]] [[ (o.project_id.description and format(' - ' + o.project_id.description)) ]]
-      [[ format(o.project_id.location + ', ' + o.project_id.free_text_date) ]]
+      [[ o.project_id and format(o.project_id.analytic_account_id.name) ]]
+      [[ o.project_id.description and format(o.project_id.description) ]]
+      [[ ', '.join([x for x in [format(o.project_id.location or ''), format(o.project_id.free_text_date or '')] if x]) ]]
     </para>
 
     <spacer length="10"/>
