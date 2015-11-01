@@ -226,7 +226,7 @@ class journal_print (account_journal_print):
 
             l_amount += self._get_result (l, l.debit or l.credit)
 
-        if l_amount != amount and abs (l_amount - amount) =< 0.02: # FIXME: check me
+        if l_amount != amount and abs (l_amount - amount) <= 0.02: # FIXME: check me
             return l_amount
 
         return amount
