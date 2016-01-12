@@ -114,6 +114,9 @@ class journal_print (account_journal_print):
         if line.invoice.type in ['out_invoice', 'out_refund']:
             return self.formatLang (line.invoice.date_invoice, date=True)
 
+        if line.invoice.type in ['in_invoice', 'in_refund']:
+            return self.formatLang (line.invoice.date_invoice_supplier, date=True)
+
         return '-'.join (line.invoice.date_invoice.split ('-')[::-1])
 
     def get_number (self, line):
