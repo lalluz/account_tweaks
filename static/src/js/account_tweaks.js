@@ -128,8 +128,6 @@ openerp.account_tweaks = function (instance) {
         },
 
         start: function () {
-            var body = this.$el.parents ('body');
-
             var start = this.$el.find ("#date_from");
             var end = this.$el.find ("#date_to");
 
