@@ -141,5 +141,45 @@ openerp.account_tweaks = function (instance) {
     instance.web.client_actions.add ('account_tweaks.action_company_vs_private_customer_invoices',
                                      'instance.account_tweaks.CompanyVsPrivateCustomerInvoicesAction');
 
-};
+    instance.account_tweaks.LibroGiornaleAction = instance.web.Widget.extend ({
+        template: 'account_tweaks.libro_giornale_template',
 
+        get_results: function () {
+            var self = this.$el;
+
+            var url = '/libro_giornale/json_url';
+            var params = {
+                'number_start': self.find ("#number_start").val(),
+                'start': self.find ("#date_from").val(),
+                'end':  self.find ("#date_to").val(),
+            };
+
+            instance.session.rpc (url, params).done (function (result) {
+                var div = self.find ('#oe_account_tweaks_results');
+
+                div.empty ()
+                div.append (result);
+            }).fail (function (result) {
+                console.log ("ERROR: " + result.message);
+            });
+        },
+
+        events: {
+            "click #search-button": 'get_results',
+        },
+
+        start: function () {
+            var start = this.$el.find ("#date_from");
+            var end = this.$el.find ("#date_to");
+
+            var date = new Date(), y = date.getFullYear(), m = date.getMonth();
+
+            start[0].valueAsDate = new Date ().setFullYear (y, m, 1);
+            end[0].valueAsDate = new Date ().setFullYear (y, m + 1, 0);
+        },
+    });
+
+    instance.web.client_actions.add ('account_tweaks.action_libro_giornale',
+                                     'instance.account_tweaks.LibroGiornaleAction');
+
+};

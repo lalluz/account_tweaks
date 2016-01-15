@@ -13,6 +13,8 @@ from openerp.report.report_sxw import rml_parse
 
 from openerp import SUPERUSER_ID
 
+import dateutil
+
 from collections import OrderedDict
 
 
@@ -226,6 +228,62 @@ class CompanyVsPrivateCustomerInvoicesActionController (http.Controller):
     @http.route ('/company_vs_private_customer_invoices/json_url', type='json')
     def json_url (self, start=None, end=None):
         return self.get_results (request.registry, request.cr, request.uid, start, end)
+
+
+class LibroGiornaleActionController (http.Controller):
+
+    _cp_path = '/libro_giornale'
+
+    def get_results (self, pool, cr, uid, start, end, number_start):
+        account_move_obj = pool.get ('account.move')
+        util_parser = rml_parse (cr, uid, 'internal')
+        util_parser.objects = [] #  FIXME
+        util_parser.setLang ('it_IT') #  FIXME
+
+        if (dateutil.parser.parse(end) - dateutil.parser.parse(start)).days > 31:
+            raise Exception("Puoi richiedere solo intervalli di un mese al massimo")
+
+        move_ids = account_move_obj.search (cr, uid, [
+            ('date', '>=', start),
+            ('date', '<=', end),
+        ], order='date')
+
+        moves = account_move_obj.browse (cr, uid, move_ids)
+
+        char_attrs = "oe_list_field_cell oe_list_field_char"
+        num_attrs = "oe_list_field_cell oe_list_field_float oe_number"
+        date_attrs = "oe_list_field_cell oe_list_field_date"
+        header_attrs = "oe_list_header"
+
+        html = '<table class="oe_list_content"><tbody>'
+        html += '<thead><tr class="oe_list_header_columns">'
+        html += '</tr></thead>'
+
+        for i, move in enumerate(moves):
+            html += '<tr>'
+            html += '<td style="width: 40px; font-weight: bold;" class="%s">%s</td>' % (char_attrs, int(number_start or 1)+i)
+            html += '<td style="width: 80px; font-weight: bold;" class="%s">%s</td>' % (date_attrs, move.date)
+            html += '<td style="width: 200px; font-weight: bold;" class="%s">%s</td>' % (char_attrs, move.name)
+            html += '<td style="width: 500px; font-weight: bold;" class="%s">%s</td>' % (char_attrs, move.ref)
+            html += '<td style="position: relative;"><br/><table style="margin: 20px 0px; position: relative; left: -420px;">'
+            for line in move.line_id:
+                html += '<tr>'
+                html += '<td style="width: 70px;">%s</td>' % line.account_id.code
+                html += '<td style="width: 300px;">%s</td>' % line.account_id.name
+                html += '<td style="width: 400px;">%s</td>' % line.name
+                html += '<td style="width: 100px;" class="%s">%s</td>' % (num_attrs, util_parser.formatLang (line.debit) if line.debit else '')
+                html += '<td style="width: 100px;" class="%s">%s</td>' % (num_attrs, util_parser.formatLang (line.credit) if line.credit else '')
+                html += '</tr>'
+            html += '</table></td>'
+            html += '</tr>'
+
+        html += '</tbody></table>'
+
+        return html
+
+    @http.route ('/libro_giornale/json_url', type='json')
+    def json_url (self, start=None, end=None, number_start=1):
+        return self.get_results (request.registry, request.cr, request.uid, start, end, number_start)
 
 
 if __name__ == '__main__':

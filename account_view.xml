@@ -156,6 +156,18 @@
              sequence="100"
              parent="account.menu_finance_legal_statement"/>
 
+        <!-- Libro giornale -->
+        <record model="ir.actions.client" id="action_libro_giornale">
+            <field name="tag">account_tweaks.action_libro_giornale</field>
+        </record>
+
+        <menuitem
+             name="Libro Giornale"
+             action="action_libro_giornale"
+             id="menu_libro_giornale"
+             sequence="101"
+             parent="account.menu_finance_legal_statement"/>
+
         <!-- Server Actions -->
         <record id="action_unpost_move" model="ir.actions.server">
             <field name="name">Unpost</field>
