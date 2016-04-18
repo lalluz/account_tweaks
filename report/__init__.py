@@ -330,6 +330,7 @@ class account_invoice (report_sxw.rml_parse):
 
         self.localcontext.update ({
             'formatBreakline': self.formatBreakline,
+            'tweakNumber': self.tweakNumber,
         })
 
     def set_context (self, objects, data, ids, report_type=None):
@@ -353,6 +354,19 @@ class account_invoice (report_sxw.rml_parse):
                 lines[i] = u'\u00a0'
 
         return '\n'.join (lines)
+
+    def tweakNumber(self, number):
+        if not number:
+            return number
+
+        tokens = number.split('/')
+        if not tokens or len(tokens) != 3:
+            return number
+
+        if tokens[1] == '2014':
+            return tokens[2]
+
+        return number
 
 
 report_sxw.report_sxw (
