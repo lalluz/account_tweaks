@@ -364,7 +364,7 @@ class account_invoice (report_sxw.rml_parse):
             return number
 
         if tokens[1] == '2014':
-            return tokens[2]
+            return str(int(tokens[2]))
 
         return number
 
