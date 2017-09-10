@@ -178,7 +178,8 @@ class journal_print (account_journal_print):
                     tax_line.credit += l.credit
 
                 tax_line_map[line.move_id] = tax_map.values ()
-                tax_line_map[line.move_id][-1].is_last_line = True
+                if tax_line_map[line.move_id]:
+                    tax_line_map[line.move_id][-1].is_last_line = True
 
         return sum (tax_line_map.values (), [])
 
