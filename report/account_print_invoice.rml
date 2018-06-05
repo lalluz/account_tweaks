@@ -160,8 +160,10 @@
           <para style="terp_default_8">[[ display_address(o.heading_partner_id or o.partner_id) ]]</para>
           <para style="terp_default_8">UID: [[ (o.journal_id.code in ['SAU', 'SAUCN'] and o.partner_id.vat) or removeParentNode('para') ]]</para> <!-- FIXME: hack for one customer -->
           <para style="terp_default_8">TVA: [[ (o.journal_id.code in ['SBE', 'SBECN'] and o.partner_id.vat) or removeParentNode('para') ]]</para> <!-- FIXME: hack for one customer -->
-          <para style="terp_default_8">Partita IVA: [[ (o.journal_id.code not in ['SAU', 'SAUCN', 'SBE', 'SBECN'] and o.partner_id.vat) or removeParentNode('para') ]]</para>
-          <para style="terp_default_8">Codice Fiscale: [[ (o.partner_id.fiscalcode) or removeParentNode('para') ]]</para>
+          <para style="terp_default_8">MwST: [[ (o.journal_id.code in ['SDE', 'SDECN'] and o.partner_id.vat) or removeParentNode('para') ]]</para><!-- FIXME: hack for one customer -->
+          <para style="terp_default_8">Partita IVA: [[ (o.journal_id.code not in ['SAU', 'SAUCN', 'SBE', 'SBECN', 'SDE', 'SDECN'] and o.partner_id.vat) or removeParentNode('para') ]]</para>
+          <para style="terp_default_8">IDNR: [[ (o.journal_id.code in ['SDE', 'SDECN'] and o.partner_id.fiscalcode) or removeParentNode('para') ]]</para><!-- FIXME: hack for one customer -->
+          <para style="terp_default_8">Codice Fiscale: [[ (o.journal_id.code not in ['SDE', 'SDECN'] and o.partner_id.fiscalcode) or removeParentNode('para') ]]</para>
         </td>
       </tr>
     </blockTable>
