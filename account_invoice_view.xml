@@ -41,6 +41,8 @@
                 </xpath>
 
                 <xpath expr="//sheet[@string='Invoice']//group/field[@name='partner_id']" position="after">
+                    <field name="partner_fiscalcode"/>
+                    <field name="partner_vat"/>
                     <field name="heading_partner_id"/>
                     <field name="project_id"/>
                 </xpath>

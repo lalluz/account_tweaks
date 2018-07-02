@@ -133,6 +133,15 @@ class account_invoice (osv.Model):
             '|', ('partner_id', 'in', ids), ('sending_partner_id', 'in', ids),
         ])
 
+    '''
+    def _get_partner_fiscalcode (self, cr, uid, context={}):
+        invoice_obj = self.pool.get ('account_invoice')
+
+        return invoice_obj.search (cr,
+            ('partner_id','=',uid)
+        )
+    '''
+
     def _get_mails (self, cr, uid, ids, context={}):
         mail_obj = self.pool.get ('mail.mail')
         message_obj = self.pool.get ('mail.message')
@@ -251,6 +260,11 @@ class account_invoice (osv.Model):
     _columns = {
         'move_line_ids': fields.function (_get_move_line_ids, relation='account.move.line',
                                           string='Journal Items', type="one2many", readonly=True),
+
+        # How to retrieve fiscalcode and vat?
+        'partner_fiscalcode': fields.many2one('res.partner', string='Customer Fiscalcode', ondelete='set null'),
+        'partner_vat': fields.many2one('res.partner', string='Customer VAT', ondelete='set null'),
+
         'sending_partner_id': fields.many2one ('res.partner', string='Receiving Partner', ondelete='set null'),
         'heading_partner_id': fields.many2one ('res.partner', string='Heading Partner', ondelete='set null'),
         'project_id': fields.many2one ('project.project', string='Project', ondelete='restrict'),
